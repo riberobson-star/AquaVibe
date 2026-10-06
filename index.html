@@ -46,6 +46,8 @@
         .icone { font-size:2rem; margin-bottom:0.5rem; }
         .card-funcao h3 { color:var(--azul-escuro); font-size:1rem; }
         .card-funcao p { color:#94a3b8; font-size:0.8rem; margin-top:0.3rem; }
+        .card-admin { background:linear-gradient(135deg,#fbbf24,#f59e0b) !important; }
+        .card-admin h3, .card-admin p { color:white !important; }
         .rodape { text-align:center; margin-top:3rem; color:#94a3b8; font-size:0.85rem; }
         .sair { max-width:200px; margin:2rem auto 0; }
         .sub-tela { display:none; padding:1rem 0; }
@@ -67,8 +69,6 @@
         .dificuldade-facil { color:#16a34a; font-weight:700; }
         .dificuldade-medio { color:#d97706; font-weight:700; }
         .dificuldade-dificil { color:#dc2626; font-weight:700; }
-
-        /* ===== BANCO DE PEIXES ===== */
         .abas { display:flex; gap:0.5rem; margin-bottom:1rem; }
         .aba-btn { flex:1; padding:0.7rem; border-radius:12px; border:2px solid var(--azul-medio); background:white; color:var(--azul-medio); cursor:pointer; font-weight:600; font-size:0.9rem; }
         .aba-btn.ativo { background:var(--azul-medio); color:white; }
@@ -86,8 +86,6 @@
         .peixe-card .tipo-tag { display:inline-block; margin-top:0.4rem; padding:0.15rem 0.6rem; border-radius:10px; font-size:0.7rem; font-weight:600; }
         .tipo-doce { background:#dbeafe; color:#1e40af; }
         .tipo-marinho { background:#cffafe; color:#155e75; }
-
-        /* Resultados Wikipedia com foto */
         .wiki-result { display:flex; gap:1rem; padding:0.8rem; background:white; border-radius:12px; margin-bottom:0.7rem; box-shadow:var(--sombra); cursor:pointer; align-items:center; transition:transform 0.2s; }
         .wiki-result:hover { transform:translateX(4px); }
         .wiki-thumb { width:70px; height:70px; border-radius:10px; object-fit:cover; flex-shrink:0; background:#e2e8f0; }
@@ -98,8 +96,6 @@
         .carregando { text-align:center; padding:2rem; color:var(--azul-medio); }
         .spinner { display:inline-block; width:30px; height:30px; border:4px solid #e0f2fe; border-top-color:var(--azul-medio); border-radius:50%; animation:girar 1s linear infinite; }
         @keyframes girar { to { transform:rotate(360deg); } }
-
-        /* Modal */
         .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:100; align-items:center; justify-content:center; padding:1rem; }
         .modal-overlay.aberto { display:flex; }
         .modal { background:white; border-radius:20px; max-width:480px; width:100%; max-height:85vh; overflow-y:auto; padding:1.8rem; position:relative; }
@@ -118,6 +114,7 @@
         .contador-qtd { display:flex; align-items:center; justify-content:center; gap:1rem; margin:1rem 0; }
         .contador-qtd button { width:40px; height:40px; border-radius:50%; border:none; background:var(--azul-medio); color:white; font-size:1.3rem; cursor:pointer; font-weight:700; }
         .contador-qtd span { font-size:1.3rem; font-weight:700; color:var(--azul-escuro); min-width:30px; text-align:center; }
+        .admin-badge { background:#fbbf24; color:#78350f; padding:0.2rem 0.6rem; border-radius:10px; font-size:0.75rem; font-weight:700; margin-left:0.5rem; }
     </style>
 </head>
 <body>
@@ -165,7 +162,7 @@
 <!-- APP -->
 <section id="tela-app" class="tela">
     <div class="cabecalho-app">
-        <h2>Bem-vindo ao AquaVibe 🐟</h2>
+        <h2>Bem-vindo ao AquaVibe 🐟<span id="admin-badge" class="admin-badge" style="display:none;">👑 ADMIN</span></h2>
         <p id="nome-usuario">Seu aquário, nosso cuidado 💧</p>
         <div class="seletor-aquario" id="seletor-aquarios"></div>
     </div>
@@ -179,8 +176,26 @@
             <div class="card-funcao" onclick="mostrarSubTela('sub-plantas')"><div class="icone">🌿</div><h3>Plantas</h3><p>Espécies</p></div>
             <div class="card-funcao" onclick="mostrarSubTela('sub-lembretes')"><div class="icone">⏰</div><h3>Lembretes</h3><p>Cuidados</p></div>
             <div class="card-funcao" onclick="mostrarSubTela('sub-historico')"><div class="icone">📈</div><h3>Histórico</h3><p>Acompanhamento</p></div>
+            <div class="card-funcao card-admin" id="card-admin" style="display:none;" onclick="mostrarSubTela('sub-admin')"><div class="icone">👑</div><h3>Painel Admin</h3><p>Gerenciar o app</p></div>
         </div>
         <button class="btn btn-secundario sair" onclick="sair()">Sair da conta</button>
+    </div>
+
+    <!-- PAINEL ADMIN -->
+    <div id="sub-admin" class="sub-tela">
+        <div class="voltar" onclick="voltarMenu()">← Voltar</div>
+        <div class="cartao-dados">
+            <h3>👑 Painel do Administrador</h3>
+            <div class="dado-linha"><span>Total de usuários cadastrados</span><span class="valor-bom" id="admin-total-usuarios">0</span></div>
+            <div class="dado-linha"><span>Total de aquários</span><span class="valor-bom" id="admin-total-aquarios">0</span></div>
+            <div class="dado-linha"><span>Espécies no banco (offline)</span><span class="valor-bom">55</span></div>
+            <div class="dado-linha"><span>Conta admin</span><span class="valor-bom">admin@aquavibe.com</span></div>
+        </div>
+        <div class="cartao-dados">
+            <h3>👥 Usuários Cadastrados</h3>
+            <div id="admin-lista-usuarios"></div>
+        </div>
+        <button class="btn btn-perigo" onclick="limparTodosUsuarios()">🗑️ Limpar todos os usuários (exceto admin)</button>
     </div>
 
     <!-- BANCO DE PEIXES -->
@@ -192,8 +207,6 @@
                 <button class="aba-btn ativo" id="aba-populares" onclick="mudarAba('populares')">⭐ Populares</button>
                 <button class="aba-btn" id="aba-mundo" onclick="mudarAba('mundo')">🌍 Busca Mundial</button>
             </div>
-
-            <!-- Aba Populares -->
             <div id="conteudo-populares">
                 <div class="busca-box"><input type="text" id="busca-peixe" placeholder="🔍 Buscar nos populares..." oninput="renderizarBancoPeixes()"></div>
                 <div class="filtros">
@@ -203,10 +216,8 @@
                 </div>
                 <div class="grade-peixes" id="grade-peixes"></div>
             </div>
-
-            <!-- Aba Busca Mundial (Wikipedia) -->
             <div id="conteudo-mundo" style="display:none;">
-                <p style="font-size:0.85rem;color:#64748b;margin-bottom:0.8rem;">🔍 Pesquise <strong>qualquer espécie do mundo</strong> (ex: "peixe palhaço", "betta", "tubarão baleia", "tilápia"). Fotos e dados reais da Wikipedia.</p>
+                <p style="font-size:0.85rem;color:#64748b;margin-bottom:0.8rem;">🔍 Pesquise qualquer espécie do mundo (precisa de internet). Fotos e dados reais da Wikipedia.</p>
                 <div class="busca-box">
                     <input type="text" id="busca-wiki" placeholder="Digite o nome do peixe...">
                     <button class="btn btn-principal" style="width:auto;padding:0.9rem 1.5rem;" onclick="buscarWikipedia()">Buscar</button>
@@ -275,74 +286,75 @@
 </div>
 
 <script>
-// ===== BANCO POPULARES (55 espécies) =====
-const BANCO_PEIXES = [
-{id:1,nome:"Neon Tetra",cientifico:"Paracheirodon innesi",familia:"Characidae",tipo:"doce",emoji:"🐟",origem:"Amazônia (Brasil, Colômbia, Peru)",tamanho:"3-4 cm",temperatura:"22-26 °C",ph:"6.0-7.0",gh:"1-10 dGH",comportamento:"Pacífico, cardume (mín. 6)",alimentacao:"Onívoro — flocos, artêmia",dificuldade:"Fácil",vida:"5-8 anos",compatibilidade:"Pequenos e pacíficos",obs:"O mais popular do mundo. Faixa azul e vermelha brilhante."},
-{id:2,nome:"Cardinal Tetra",cientifico:"Paracheirodon axelrodi",familia:"Characidae",tipo:"doce",emoji:"🐠",origem:"Amazônia Superior",tamanho:"4-5 cm",temperatura:"23-27 °C",ph:"5.5-7.0",gh:"1-8 dGH",comportamento:"Pacífico, cardume",alimentacao:"Onívoro — pequenos vivos/congelados",dificuldade:"Médio",vida:"4-6 anos",compatibilidade:"Pequenos e calmos",obs:"Vermelho vai até a cabeça. Mais sensível que o Neon."},
-{id:3,nome:"Guppy",cientifico:"Poecilia reticulata",familia:"Poeciliidae",tipo:"doce",emoji:"🐟",origem:"América do Sul",tamanho:"3-6 cm",temperatura:"22-28 °C",ph:"7.0-8.5",gh:"8-20 dGH",comportamento:"Pacífico, muito ativo",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"2-3 anos",compatibilidade:"Pacíficos similares",obs:"Reproduz fácil — fêmeas dão à luz filhotes vivos."},
-{id:4,nome:"Molly",cientifico:"Poecilia sphenops",familia:"Poeciliidae",tipo:"doce",emoji:"🐠",origem:"México a Colômbia",tamanho:"8-12 cm",temperatura:"24-28 °C",ph:"7.5-8.5",gh:"10-25 dGH",comportamento:"Pacífico, ativo",alimentacao:"Onívoro — vegetais",dificuldade:"Fácil",vida:"3-5 anos",compatibilidade:"Pacíficos similares",obs:"Gosta de um pouco de sal na água. Variações: preta, veludo, balão."},
-{id:5,nome:"Platy",cientifico:"Xiphophorus maculatus",familia:"Poeciliidae",tipo:"doce",emoji:"🐟",origem:"México, Guatemala",tamanho:"5-7 cm",temperatura:"20-26 °C",ph:"7.0-8.3",gh:"10-28 dGH",comportamento:"Pacífico, ativo",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"3-4 anos",compatibilidade:"Pacíficos similares",obs:"Ótimo para iniciantes. Muitas cores."},
-{id:6,nome:"Espada (Swordtail)",cientifico:"Xiphophorus hellerii",familia:"Poeciliidae",tipo:"doce",emoji:"🗡️",origem:"México a Honduras",tamanho:"10-12 cm",temperatura:"22-28 °C",ph:"7.0-8.3",gh:"12-30 dGH",comportamento:"Pacífico, ativo",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"3-5 anos",compatibilidade:"Pacíficos similares",obs:"Macho tem 'espada' na cauda. Boa nadador."},
-{id:7,nome:"Acará Bandeira",cientifico:"Pterophyllum scalare",familia:"Cichlidae",tipo:"doce",emoji:"🐟",origem:"Bacia Amazônica",tamanho:"15 cm (altura 25 cm)",temperatura:"24-30 °C",ph:"6.0-7.5",gh:"3-12 dGH",comportamento:"Semi-agressivo, territorial",alimentacao:"Carnívoro",dificuldade:"Médio",vida:"8-10 anos",compatibilidade:"Tetras grandes, coridoras",obs:"Formato triangular. Pode comer peixes muito pequenos."},
-{id:8,nome:"Disco (Discus)",cientifico:"Symphysodon aequifasciatus",familia:"Cichlidae",tipo:"doce",emoji:"🐠",origem:"Bacia Amazônica",tamanho:"15-20 cm",temperatura:"28-31 °C",ph:"5.5-7.0",gh:"1-8 dGH",comportamento:"Pacífico, cardume (mín. 4)",alimentacao:"Carnívoro exigente",dificuldade:"Difícil",vida:"10-15 anos",compatibilidade:"Apistogramas, coridoras",obs:"O 'rei do aquário'. Exige água quente e imaculada."},
-{id:9,nome:"Oscar",cientifico:"Astronotus ocellatus",familia:"Cichlidae",tipo:"doce",emoji:"🐡",origem:"Amazônia, Paraná",tamanho:"30-40 cm",temperatura:"23-27 °C",ph:"6.0-8.0",gh:"5-20 dGH",comportamento:"Agressivo, inteligente",alimentacao:"Carnívoro — peixes, pellets",dificuldade:"Médio",vida:"10-15 anos",compatibilidade:"Grandes e robustos",obs:"Reconhece o dono. Muito lixo — filtro potente. Mín. 300L."},
-{id:10,nome:"Betta (Peixe de Combate)",cientifico:"Betta splendens",familia:"Osphronemidae",tipo:"doce",emoji:"🐟",origem:"Tailândia, Camboja",tamanho:"6-8 cm",temperatura:"24-28 °C",ph:"6.5-7.5",gh:"2-12 dGH",comportamento:"Machos agressivos entre si (NUNCA juntos)",alimentacao:"Carnívoro — pellets específicos",dificuldade:"Fácil",vida:"3-5 anos",compatibilidade:"Sozinho ou com fêmeas/caramujos",obs:"Respira ar (labirinto). Machos com nadadeiras longas."},
-{id:11,nome:"Corydora",cientifico:"Corydoras paleatus",familia:"Callichthyidae",tipo:"doce",emoji:"🐟",origem:"América do Sul",tamanho:"5-7 cm",temperatura:"22-26 °C",ph:"6.0-7.5",gh:"2-15 dGH",comportamento:"Pacífico, cardume (mín. 4), de fundo",alimentacao:"Onívoro de fundo — pastilhas",dificuldade:"Fácil",vida:"5-10 anos",compatibilidade:"Todos os pacíficos",obs:"Limpa o fundo. Gosta de areia fina. Vem à superfície respirar — normal!"},
-{id:12,nome:"Cascudo (Ancistrus)",cientifico:"Ancistrus cirrhosus",familia:"Loricariidae",tipo:"doce",emoji:"🐡",origem:"América do Sul",tamanho:"12-15 cm",temperatura:"22-28 °C",ph:"6.5-7.5",gh:"4-18 dGH",comportamento:"Pacífico, noturno, de fundo",alimentacao:"Herbívoro — algas, abobrinha",dificuldade:"Fácil",vida:"10-15 anos",compatibilidade:"Todos",obs:"Maior comedor de algas. Precisa de toco de madeira para roer."},
-{id:13,nome:"Ramirezi (Blue Ram)",cientifico:"Mikrogeophagus ramirezi",familia:"Cichlidae",tipo:"doce",emoji:"🐠",origem:"Venezuela, Colômbia",tamanho:"5-7 cm",temperatura:"26-30 °C",ph:"5.0-7.0",gh:"1-10 dGH",comportamento:"Pacífico, forma casal",alimentacao:"Carnívoro — vivos/congelados",dificuldade:"Médio",vida:"2-4 anos",compatibilidade:"Pequenos e calmos",obs:"Ciclídeo anão bonito. Sensível a água ruim."},
-{id:14,nome:"Danio Zebra",cientifico:"Danio rerio",familia:"Cyprinidae",tipo:"doce",emoji:"🐟",origem:"Índia, Bangladesh",tamanho:"4-5 cm",temperatura:"18-25 °C",ph:"6.5-7.5",gh:"5-19 dGH",comportamento:"Pacífico, muito ativo, cardume (mín. 6)",alimentacao:"Onívoro — flocos",dificuldade:"Fácil",vida:"3-5 anos",compatibilidade:"Pacíficos similares",obs:"Extremamente resistente. Ótimo para iniciantes e ciclagem."},
-{id:15,nome:"Barbo Tigre",cientifico:"Puntigrus tetrazona",familia:"Cyprinidae",tipo:"doce",emoji:"🐯",origem:"Indonésia (Sumatra)",tamanho:"6-7 cm",temperatura:"20-26 °C",ph:"6.0-8.0",gh:"5-19 dGH",comportamento:"Ativo, belisca nadadeiras (cardume 6+)",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"5-7 anos",compatibilidade:"Ativos e rápidos",obs:"Listras laranja e pretas. Evite com bettas e anjos."},
-{id:16,nome:"Colisa (Gourami Anão)",cientifico:"Trichogaster lalius",familia:"Osphronemidae",tipo:"doce",emoji:"🐠",origem:"Índia, Paquistão",tamanho:"5-7 cm",temperatura:"24-28 °C",ph:"6.0-7.5",gh:"4-10 dGH",comportamento:"Pacífico, tímido",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"3-4 anos",compatibilidade:"Pacíficos pequenos",obs:"Macho azul com listras vermelhas. Constrói ninho de bolhas."},
-{id:17,nome:"Otocinclus",cientifico:"Otocinclus affinis",familia:"Loricariidae",tipo:"doce",emoji:"🐟",origem:"Bacia Amazônica",tamanho:"3-5 cm",temperatura:"21-26 °C",ph:"6.0-7.5",gh:"2-15 dGH",comportamento:"Pacífico, cardume (mín. 3)",alimentacao:"Herbívoro — ALGAS verdes",dificuldade:"Médio",vida:"3-5 anos",compatibilidade:"Pacíficos pequenos",obs:"Melhor comedor de algas verdes. Só em aquário maduro."},
-{id:18,nome:"Rasbora Arlequim",cientifico:"Trigonostigma heteromorpha",familia:"Cyprinidae",tipo:"doce",emoji:"🐟",origem:"Tailândia, Malásia",tamanho:"4-5 cm",temperatura:"22-27 °C",ph:"6.0-7.5",gh:"2-12 dGH",comportamento:"Pacífico, cardume (mín. 6)",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"5-8 anos",compatibilidade:"Pacíficos pequenos",obs:"Laranja com triângulo preto. Ideal para plantados."},
-{id:19,nome:"Tetra Serpae",cientifico:"Hyphessobrycon eques",familia:"Characidae",tipo:"doce",emoji:"🐠",origem:"Brasil (Mato Grosso)",tamanho:"4-5 cm",temperatura:"22-27 °C",ph:"5.5-7.5",gh:"5-15 dGH",comportamento:"Semi-agressivo, belisca (cardume 6+)",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"5-7 anos",compatibilidade:"Ativos e rápidos",obs:"Vermelho vibrante com nadadeira preta."},
-{id:20,nome:"Kinguio (Goldfish)",cientifico:"Carassius auratus",familia:"Cyprinidae",tipo:"doce",emoji:"🐠",origem:"China (domesticado)",tamanho:"15-30 cm",temperatura:"15-23 °C (água fria!)",ph:"7.0-8.4",gh:"8-20 dGH",comportamento:"Pacífico, muito sujo",alimentacao:"Onívoro — ração específica",dificuldade:"Fácil (aquário grande!)",vida:"10-20 anos",compatibilidade:"Só com outros kinguios",obs:"NÃO é de tigela! Água fria — não com tropicais."},
-{id:21,nome:"Apistograma",cientifico:"Apistogramma cacatuoides",familia:"Cichlidae",tipo:"doce",emoji:"🐟",origem:"Bacia Amazônica",tamanho:"5-8 cm",temperatura:"23-29 °C",ph:"5.0-7.0",gh:"1-10 dGH",comportamento:"Pacífico, territorial na reprodução",alimentacao:"Carnívoro — vivos/congelados",dificuldade:"Médio",vida:"3-5 anos",compatibilidade:"Tetras pequenos, coridoras",obs:"Ciclídeo anão perfeito para plantados. Muitas espécies."},
-{id:22,nome:"Tetra Nariz Vermelho",cientifico:"Hemigrammus rhodostomus",familia:"Characidae",tipo:"doce",emoji:"🐟",origem:"Amazônia",tamanho:"4-5 cm",temperatura:"24-28 °C",ph:"5.5-7.0",gh:"2-8 dGH",comportamento:"Pacífico, cardume (mín. 6)",alimentacao:"Onívoro",dificuldade:"Médio",vida:"5-8 anos",compatibilidade:"Pacíficos pequenos",obs:"Cabeça vermelha brilhante. Indicador de qualidade da água!"},
-{id:23,nome:"Bóia (Clown Loach)",cientifico:"Chromobotia macracanthus",familia:"Botiidae",tipo:"doce",emoji:"🤡",origem:"Indonésia (Sumatra)",tamanho:"20-30 cm",temperatura:"25-30 °C",ph:"6.0-7.5",gh:"5-12 dGH",comportamento:"Pacífico, cardume (mín. 3), brincalhão",alimentacao:"Onívoro — come CARACÓIS!",dificuldade:"Médio",vida:"10-20 anos",compatibilidade:"Pacíficos similares",obs:"Laranja com listras pretas. Come caracóis! Fica GRANDE — 400L+."},
-{id:24,nome:"Tubarão Rabo Vermelho",cientifico:"Epalzeorhynchos bicolor",familia:"Cyprinidae",tipo:"doce",emoji:"🦈",origem:"Tailândia",tamanho:"12-15 cm",temperatura:"22-26 °C",ph:"6.5-7.5",gh:"5-15 dGH",comportamento:"Territorial (só 1 por aquário)",alimentacao:"Onívoro — algas, pastilhas",dificuldade:"Fácil",vida:"5-8 anos",compatibilidade:"Ativos similares",obs:"Corpo preto, cauda vermelha. Não é tubarão de verdade!"},
-{id:25,nome:"Peixe Arco-Íris",cientifico:"Melanotaenia praecox",familia:"Melanotaeniidae",tipo:"doce",emoji:"🌈",origem:"Nova Guiné, Austrália",tamanho:"6-12 cm",temperatura:"22-28 °C",ph:"7.0-8.0",gh:"8-20 dGH",comportamento:"Pacífico, ativo, cardume (mín. 6)",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"5-8 anos",compatibilidade:"Pacíficos ativos",obs:"Cores metálicas iridescentes. Machos mais coloridos."},
-{id:26,nome:"Kribensis",cientifico:"Pelvicachromis pulcher",familia:"Cichlidae",tipo:"doce",emoji:"🐠",origem:"África (Nigéria)",tamanho:"8-10 cm",temperatura:"23-27 °C",ph:"6.0-8.0",gh:"5-20 dGH",comportamento:"Pacífico, forma casal",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"5-8 anos",compatibilidade:"Pacíficos similares",obs:"Ciclídeo africano anão. Fêmea com barriga vermelha/roxa."},
-{id:27,nome:"Tetra Embaixador",cientifico:"Inpaichthys kerri",familia:"Characidae",tipo:"doce",emoji:"🐟",origem:"Brasil (Aripuanã)",tamanho:"4-5 cm",temperatura:"24-28 °C",ph:"6.0-7.5",gh:"2-12 dGH",comportamento:"Pacífico, cardume (mín. 6)",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"4-6 anos",compatibilidade:"Pacíficos pequenos",obs:"Azul iridescente. Perfeito para plantados."},
-{id:28,nome:"Tetra Saia Preta",cientifico:"Gymnocorymbus ternetzi",familia:"Characidae",tipo:"doce",emoji:"🐟",origem:"Brasil, Bolívia",tamanho:"5-7 cm",temperatura:"20-26 °C",ph:"6.0-8.0",gh:"5-20 dGH",comportamento:"Pacífico, cardume (mín. 5)",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"3-5 anos",compatibilidade:"Ativos similares",obs:"Resistente — bom para iniciantes. Variações glofish."},
-// MARINHOS
-{id:101,nome:"Palhaço Ocellaris (Nemo)",cientifico:"Amphiprion ocellaris",familia:"Pomacentridae",tipo:"marinho",emoji:"🤡",origem:"Indo-Pacífico",tamanho:"8-11 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Pacífico, forma par (anêmona)",alimentacao:"Onívoro — pellets, congelados",dificuldade:"Fácil",vida:"6-10 anos",compatibilidade:"Pacíficos marinhos",obs:"O mais famoso! Simbiose com anêmonas. Muda de sexo (macho vira fêmea)."},
-{id:102,nome:"Palhaço Marrom (Tomato)",cientifico:"Amphiprion frenatus",familia:"Pomacentridae",tipo:"marinho",emoji:"🍅",origem:"Indo-Pacífico Ocidental",tamanho:"12-14 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Semi-agressivo, territorial",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"6-10 anos",compatibilidade:"Maiores e robustos",obs:"Vermelho-tomate com faixa branca. Mais agressivo que o Nemo."},
-{id:103,nome:"Tang Azul (Dory)",cientifico:"Paracanthurus hepatus",familia:"Acanthuridae",tipo:"marinho",emoji:"💙",origem:"Indo-Pacífico",tamanho:"25-30 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Pacífico, ativo",alimentacao:"Herbívoro — algas, nori",dificuldade:"Médio",vida:"8-12 anos",compatibilidade:"Pacíficos grandes",obs:"A famosa Dory! Sensível ao ich — quarentena obrigatória. 300L+."},
-{id:104,nome:"Tang Amarelo",cientifico:"Zebrasoma flavescens",familia:"Acanthuridae",tipo:"marinho",emoji:"💛",origem:"Havaí (endêmico)",tamanho:"15-20 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Pacífico (agressivo com outros amarelos)",alimentacao:"Herbívoro — algas, nori",dificuldade:"Fácil",vida:"10-20 anos",compatibilidade:"Pacíficos (não com outro Zebrasoma)",obs:"Amarelo vibrante. Excelente comedor de algas. Só um por aquário."},
-{id:105,nome:"Anjo Imperador",cientifico:"Pomacanthus imperator",familia:"Pomacanthidae",tipo:"marinho",emoji:"👑",origem:"Indo-Pacífico",tamanho:"35-40 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Semi-agressivo, territorial",alimentacao:"Onívoro — esponjas, pellets",dificuldade:"Difícil",vida:"15-20 anos",compatibilidade:"Grandes e robustos",obs:"Jovem azul com anéis; adulto listrado. 500L+. Pode beliscar corais."},
-{id:106,nome:"Anjo Chama (Flame)",cientifico:"Centropyge loricula",familia:"Pomacanthidae",tipo:"marinho",emoji:"🔥",origem:"Pacífico (Havaí)",tamanho:"8-10 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Semi-agressivo",alimentacao:"Onívoro — algas, pellets",dificuldade:"Médio",vida:"5-10 anos",compatibilidade:"Pacíficos a semi-agressivos",obs:"Vermelho-fogo com listras pretas. Menor e mais colorido dos anões. Risco em recife."},
-{id:107,nome:"Anjo Beleza de Coral",cientifico:"Centropyge bispinosa",familia:"Pomacanthidae",tipo:"marinho",emoji:"💜",origem:"Indo-Pacífico",tamanho:"8-10 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Pacífico a semi-agressivo",alimentacao:"Onívoro — algas, pellets",dificuldade:"Fácil",vida:"5-10 anos",compatibilidade:"Pacíficos marinhos",obs:"Roxo/azul com bordas alaranjadas. O anjo-anão mais seguro para recife."},
-{id:108,nome:"Borboleta Bico de Cobre",cientifico:"Chelmon rostratus",familia:"Chaetodontidae",tipo:"marinho",emoji:"🦋",origem:"Indo-Pacífico",tamanho:"18-20 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Pacífico, tímido",alimentacao:"Carnívoro — come AIPTASIA!",dificuldade:"Difícil",vida:"5-10 anos",compatibilidade:"Pacíficos marinhos",obs:"Famoso por comer Aiptasia (pestes). Difícil de alimentar — aquário maduro."},
-{id:109,nome:"Mandarim (Dragonet)",cientifico:"Synchiropus splendidus",familia:"Callionymidae",tipo:"marinho",emoji:"🐉",origem:"Pacífico Ocidental",tamanho:"6-8 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Pacífico, tímido, de fundo",alimentacao:"SÓ copépodos vivos!",dificuldade:"Difícil",vida:"3-6 anos",compatibilidade:"Pacíficos muito calmos",obs:"O peixe mais colorido do mundo. Só come copépodos — precisa de refúgio. Não para iniciantes!"},
-{id:110,nome:"Gramata Real",cientifico:"Gramma loreto",familia:"Grammatidae",tipo:"marinho",emoji:"👑",origem:"Caribe",tamanho:"7-8 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Pacífico, territorial (pequeno)",alimentacao:"Carnívoro — mysis, pellets",dificuldade:"Fácil",vida:"5-10 anos",compatibilidade:"Pacíficos marinhos",obs:"Metade roxa, metade amarela. Seguro para recife. Fica de cabeça para baixo — normal!"},
-{id:111,nome:"Peixe Fogo (Firefish)",cientifico:"Nemateleotris magnifica",familia:"Gobiidae",tipo:"marinho",emoji:"🔥",origem:"Indo-Pacífico",tamanho:"7-9 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Muito pacífico, tímido, em par",alimentacao:"Carnívoro — mysis, flocos finos",dificuldade:"Fácil",vida:"3-5 anos",compatibilidade:"Pacíficos muito calmos",obs:"Branco com cabeça amarela e dorsal vermelha. PULA — tampa obrigatória!"},
-{id:112,nome:"Goby Guarda (Watchman)",cientifico:"Cryptocentrus cinctus",familia:"Gobiidae",tipo:"marinho",emoji:"🦐",origem:"Indo-Pacífico",tamanho:"8-10 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Pacífico, de fundo (SIMBIOSE com camarão pistola!)",alimentacao:"Carnívoro — mysis, afundantes",dificuldade:"Fácil",vida:"4-6 anos",compatibilidade:"Pacíficos marinhos",obs:"Amarelo com manchas azuis. Vive com Camarão Pistola: ele cava a toca, o goby vigia."},
-{id:113,nome:"Wrasse Seis Linhas",cientifico:"Pseudocheilinus hexataenia",familia:"Labridae",tipo:"marinho",emoji:"⚡",origem:"Indo-Pacífico",tamanho:"7-9 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Ativo, pode ser mau com novos",alimentacao:"Carnívoro — come flatworms!",dificuldade:"Fácil",vida:"4-6 anos",compatibilidade:"Pacíficos a semi-agressivos",obs:"Seis listras laranja/azuis. Muito ativo. Adicione por último."},
-{id:114,nome:"Hawkfish Chama",cientifico:"Neocirrhites armatus",familia:"Cirrhitidae",tipo:"marinho",emoji:"🦅",origem:"Pacífico (Fiji)",tamanho:"8-10 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Semi-agressivo, pousa em corais",alimentacao:"Carnívoro — mysis, camarões",dificuldade:"Fácil",vida:"5-10 anos",compatibilidade:"Semi-agressivos (cuidado com pequenos!)",obs:"Vermelho brilhante. Pousa como águia. Pode comer camarões e peixes pequenos."},
-{id:115,nome:"Leão Anão (Lionfish)",cientifico:"Dendrochirus brachypterus",familia:"Scorpaenidae",tipo:"marinho",emoji:"🦁",origem:"Indo-Pacífico",tamanho:"15-18 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Pacífico mas come o que cabe na boca",alimentacao:"Carnívoro — peixes, camarões",dificuldade:"Médio",vida:"8-12 anos",compatibilidade:"SÓ peixes GRANDES",obs:"Espinhos VENENOSOS! Cuidado ao manusear. Aquário só de peixes grandes."},
-{id:116,nome:"Moreia Neve (Snowflake Eel)",cientifico:"Echidna nebulosa",familia:"Muraenidae",tipo:"marinho",emoji:"🐍",origem:"Indo-Pacífico",tamanho:"60-90 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Pacífico mas come pequenos",alimentacao:"Carnívoro — camarões, peixes, lula",dificuldade:"Médio",vida:"10-15 anos",compatibilidade:"Grandes demais para comer",obs:"Branca com manchas. Escapa — TAMPA e lacre tudo! 300L+ com rochas."},
-{id:117,nome:"Cavalo-Marinho",cientifico:"Hippocampus erectus",familia:"Syngnathidae",tipo:"marinho",emoji:"🐴",origem:"Atlântico (EUA a Brasil)",tamanho:"12-18 cm",temperatura:"22-25 °C (mais frio)",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Muito pacífico, lento, monogâmico",alimentacao:"Artêmia viva, mysis (várias vezes/dia)",dificuldade:"Difícil",vida:"3-6 anos",compatibilidade:"SÓ com cavalos-marinhos",obs:"Macho carrega os filhotes! Aquário específico. Não compete por comida."},
-{id:118,nome:"Donzela Azul",cientifico:"Chrysiptera cyanea",familia:"Pomacentridae",tipo:"marinho",emoji:"💙",origem:"Indo-Pacífico",tamanho:"6-8 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Agressivo e territorial (adulto)",alimentacao:"Onívoro — flocos, pellets",dificuldade:"Fácil",vida:"5-8 anos",compatibilidade:"Semi-agressivos robustos",obs:"Azul elétrico. Resistente — primeiro peixe. Mas vira valentão — adicione por último!"},
-{id:119,nome:"Chromis Azul-Verde",cientifico:"Chromis viridis",familia:"Pomacentridae",tipo:"marinho",emoji:"🐟",origem:"Indo-Pacífico",tamanho:"8-10 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Muito pacífico, cardume (mín. 3)",alimentacao:"Onívoro — plâncton, flocos",dificuldade:"Fácil",vida:"5-8 anos",compatibilidade:"Todos os pacíficos",obs:"Verde-azulado iridescente. A única donzela verdadeiramente pacífica. Cardume lindo."},
-{id:120,nome:"Anthias (Lyretail)",cientifico:"Pseudanthias squamipinnis",familia:"Serranidae",tipo:"marinho",emoji:"🧡",origem:"Indo-Pacífico",tamanho:"10-13 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Pacífico, cardume (1 macho + fêmeas)",alimentacao:"Carnívoro plâncton — 3-4x/dia",dificuldade:"Difícil",vida:"5-8 anos",compatibilidade:"Pacíficos calmos",obs:"Fêmeas laranja, macho rosa. Muda de sexo. Alimentação exigente."},
-{id:121,nome:"Goby Neon (Limpador)",cientifico:"Elacatinus oceanops",familia:"Gobiidae",tipo:"marinho",emoji:"💡",origem:"Caribe",tamanho:"4-5 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Muito pacífico, limpador",alimentacao:"Carnívoro — parasitas, mysis",dificuldade:"Fácil",vida:"3-5 anos",compatibilidade:"Pacíficos marinhos",obs:"Azul elétrico com faixa preta. Come parasitas de outros peixes! Pode limpar sua mão."},
-{id:122,nome:"Tang Sailfin",cientifico:"Zebrasoma veliferum",familia:"Acanthuridae",tipo:"marinho",emoji:"⛵",origem:"Indo-Pacífico",tamanho:"30-40 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Pacífico (agressivo com outros sailfin)",alimentacao:"Herbívoro — algas, nori",dificuldade:"Médio",vida:"10-15 anos",compatibilidade:"Pacíficos grandes",obs:"Barbatana dorsal enorme (vela). 500L+. Excelente comedor de algas."},
-{id:123,nome:"Anjo Francês",cientifico:"Pomacanthus paru",familia:"Pomacanthidae",tipo:"marinho",emoji:"🇫🇷",origem:"Atlântico (Flórida a Brasil)",tamanho:"35-40 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Semi-agressivo, forma par para vida",alimentacao:"Onívoro — esponjas, algas",dificuldade:"Médio",vida:"15-20 anos",compatibilidade:"Grandes e robustos",obs:"Preto com escamas amarelas. Casal monogâmico. 500L+. Não seguro para recife."},
-{id:124,nome:"Borboleta Guaxinim",cientifico:"Chaetodon lunula",familia:"Chaetodontidae",tipo:"marinho",emoji:"🦝",origem:"Indo-Pacífico",tamanho:"18-20 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Pacífico",alimentacao:"Onívoro — mysis, algas (cuidado com corais!)",dificuldade:"Médio",vida:"5-10 anos",compatibilidade:"Pacíficos marinhos",obs:"Máscara preta de guaxinim. Um dos borboletas mais fáceis. Pode beliscar corais."},
-{id:125,nome:"Wrasse Leopardo",cientifico:"Macropharyngodon meleagris",familia:"Labridae",tipo:"marinho",emoji:"🐆",origem:"Indo-Pacífico",tamanho:"12-15 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Pacífico, enterra na areia à noite",alimentacao:"Carnívoro — pequenos invertebrados",dificuldade:"Médio",vida:"5-8 anos",compatibilidade:"Pacíficos marinhos",obs:"Macho azul-esverdeado com manchas. Areia fina obrigatória! Sensível ao transporte."},
-{id:126,nome:"Dottyback Orquídea",cientifico:"Pseudochromis fridmani",familia:"Pseudochromidae",tipo:"marinho",emoji:"🌸",origem:"Mar Vermelho (endêmico)",tamanho:"6-8 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Semi-agressivo, territorial",alimentacao:"Carnívoro — mysis, pellets",dificuldade:"Fácil",vida:"5-8 anos",compatibilidade:"Pacíficos a semi-agressivos",obs:"Roxo-orquídea brilhante. Resistente. Adicione por último. Seguro para recife."},
-{id:127,nome:"Peixe-Jaquim (Harlequin Tusk)",cientifico:"Choerodon fasciatus",familia:"Labridae",tipo:"marinho",emoji:"🎭",origem:"Indo-Pacífico (Austrália)",tamanho:"25-30 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025 sg",comportamento:"Semi-agressivo, robusto",alimentacao:"Carnívoro — ouriços, moluscos (dentes fortes!)",dificuldade:"Médio",vida:"8-12 anos",compatibilidade:"Grandes e robustos",obs:"Listras laranja/azuis + dentes caninos azuis. Come ouriços. Não seguro para recife. 300L+."}
+// ===== CONTA ADMIN JÁ INCLUÍDA (PERMANENTE) =====
+let contas = [
+    { nome:"Administrador", email:"admin@aquavibe.com", senha:"admin123", aquarios:[], aquarioAtivo:null, admin:true }
 ];
+let usuario = {nome:'',email:'',aquarios:[],aquarioAtivo:null};
+let filtroAtual='todos', abaAtual='populares', peixeSelecionado=null, qtdAdicionar=1;
 
-// ===== ESTADO =====
-let contas = [], usuario = {nome:'',email:'',aquarios:[],aquarioAtivo:null};
-let filtroAtual = 'todos', abaAtual = 'populares';
-let peixeSelecionado = null, qtdAdicionar = 1;
+// ===== BANCO POPULARES =====
+const BANCO_PEIXES = [
+{id:1,nome:"Neon Tetra",cientifico:"Paracheirodon innesi",familia:"Characidae",tipo:"doce",emoji:"🐟",origem:"Amazônia",tamanho:"3-4 cm",temperatura:"22-26 °C",ph:"6.0-7.0",gh:"1-10 dGH",comportamento:"Pacífico, cardume (mín. 6)",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"5-8 anos",compatibilidade:"Pequenos e pacíficos",obs:"O mais popular do mundo."},
+{id:2,nome:"Cardinal Tetra",cientifico:"Paracheirodon axelrodi",familia:"Characidae",tipo:"doce",emoji:"🐠",origem:"Amazônia Superior",tamanho:"4-5 cm",temperatura:"23-27 °C",ph:"5.5-7.0",gh:"1-8 dGH",comportamento:"Pacífico, cardume",alimentacao:"Onívoro",dificuldade:"Médio",vida:"4-6 anos",compatibilidade:"Pequenos e calmos",obs:"Vermelho vai até a cabeça."},
+{id:3,nome:"Guppy",cientifico:"Poecilia reticulata",familia:"Poeciliidae",tipo:"doce",emoji:"🐟",origem:"América do Sul",tamanho:"3-6 cm",temperatura:"22-28 °C",ph:"7.0-8.5",gh:"8-20 dGH",comportamento:"Pacífico, ativo",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"2-3 anos",compatibilidade:"Pacíficos similares",obs:"Reproduz fácil — filhotes vivos."},
+{id:4,nome:"Molly",cientifico:"Poecilia sphenops",familia:"Poeciliidae",tipo:"doce",emoji:"🐠",origem:"México a Colômbia",tamanho:"8-12 cm",temperatura:"24-28 °C",ph:"7.5-8.5",gh:"10-25 dGH",comportamento:"Pacífico, ativo",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"3-5 anos",compatibilidade:"Pacíficos similares",obs:"Gosta de um pouco de sal."},
+{id:5,nome:"Platy",cientifico:"Xiphophorus maculatus",familia:"Poeciliidae",tipo:"doce",emoji:"🐟",origem:"México, Guatemala",tamanho:"5-7 cm",temperatura:"20-26 °C",ph:"7.0-8.3",gh:"10-28 dGH",comportamento:"Pacífico, ativo",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"3-4 anos",compatibilidade:"Pacíficos similares",obs:"Ótimo para iniciantes."},
+{id:6,nome:"Espada (Swordtail)",cientifico:"Xiphophorus hellerii",familia:"Poeciliidae",tipo:"doce",emoji:"🗡️",origem:"México a Honduras",tamanho:"10-12 cm",temperatura:"22-28 °C",ph:"7.0-8.3",gh:"12-30 dGH",comportamento:"Pacífico, ativo",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"3-5 anos",compatibilidade:"Pacíficos similares",obs:"Macho tem 'espada' na cauda."},
+{id:7,nome:"Acará Bandeira",cientifico:"Pterophyllum scalare",familia:"Cichlidae",tipo:"doce",emoji:"🐟",origem:"Bacia Amazônica",tamanho:"15 cm",temperatura:"24-30 °C",ph:"6.0-7.5",gh:"3-12 dGH",comportamento:"Semi-agressivo",alimentacao:"Carnívoro",dificuldade:"Médio",vida:"8-10 anos",compatibilidade:"Tetras grandes, coridoras",obs:"Formato triangular. Pode comer peixes pequenos."},
+{id:8,nome:"Disco (Discus)",cientifico:"Symphysodon aequifasciatus",familia:"Cichlidae",tipo:"doce",emoji:"🐠",origem:"Bacia Amazônica",tamanho:"15-20 cm",temperatura:"28-31 °C",ph:"5.5-7.0",gh:"1-8 dGH",comportamento:"Pacífico, cardume (mín. 4)",alimentacao:"Carnívoro exigente",dificuldade:"Difícil",vida:"10-15 anos",compatibilidade:"Apistogramas, coridoras",obs:"O 'rei do aquário'."},
+{id:9,nome:"Oscar",cientifico:"Astronotus ocellatus",familia:"Cichlidae",tipo:"doce",emoji:"🐡",origem:"Amazônia",tamanho:"30-40 cm",temperatura:"23-27 °C",ph:"6.0-8.0",gh:"5-20 dGH",comportamento:"Agressivo, inteligente",alimentacao:"Carnívoro",dificuldade:"Médio",vida:"10-15 anos",compatibilidade:"Grandes e robustos",obs:"Reconhece o dono. Mín. 300L."},
+{id:10,nome:"Betta",cientifico:"Betta splendens",familia:"Osphronemidae",tipo:"doce",emoji:"🐟",origem:"Tailândia",tamanho:"6-8 cm",temperatura:"24-28 °C",ph:"6.5-7.5",gh:"2-12 dGH",comportamento:"Machos agressivos entre si",alimentacao:"Carnívoro",dificuldade:"Fácil",vida:"3-5 anos",compatibilidade:"Sozinho ou fêmeas",obs:"Respira ar. NUNCA dois machos juntos."},
+{id:11,nome:"Corydora",cientifico:"Corydoras paleatus",familia:"Callichthyidae",tipo:"doce",emoji:"🐟",origem:"América do Sul",tamanho:"5-7 cm",temperatura:"22-26 °C",ph:"6.0-7.5",gh:"2-15 dGH",comportamento:"Pacífico, cardume, de fundo",alimentacao:"Onívoro de fundo",dificuldade:"Fácil",vida:"5-10 anos",compatibilidade:"Todos os pacíficos",obs:"Limpa o fundo. Gosta de areia fina."},
+{id:12,nome:"Cascudo (Ancistrus)",cientifico:"Ancistrus cirrhosus",familia:"Loricariidae",tipo:"doce",emoji:"🐡",origem:"América do Sul",tamanho:"12-15 cm",temperatura:"22-28 °C",ph:"6.5-7.5",gh:"4-18 dGH",comportamento:"Pacífico, noturno",alimentacao:"Herbívoro — algas",dificuldade:"Fácil",vida:"10-15 anos",compatibilidade:"Todos",obs:"Maior comedor de algas. Precisa de toco."},
+{id:13,nome:"Ramirezi",cientifico:"Mikrogeophagus ramirezi",familia:"Cichlidae",tipo:"doce",emoji:"🐠",origem:"Venezuela",tamanho:"5-7 cm",temperatura:"26-30 °C",ph:"5.0-7.0",gh:"1-10 dGH",comportamento:"Pacífico, forma casal",alimentacao:"Carnívoro",dificuldade:"Médio",vida:"2-4 anos",compatibilidade:"Pequenos e calmos",obs:"Ciclídeo anão bonito."},
+{id:14,nome:"Danio Zebra",cientifico:"Danio rerio",familia:"Cyprinidae",tipo:"doce",emoji:"🐟",origem:"Índia",tamanho:"4-5 cm",temperatura:"18-25 °C",ph:"6.5-7.5",gh:"5-19 dGH",comportamento:"Pacífico, ativo, cardume",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"3-5 anos",compatibilidade:"Pacíficos similares",obs:"Extremamente resistente."},
+{id:15,nome:"Barbo Tigre",cientifico:"Puntigrus tetrazona",familia:"Cyprinidae",tipo:"doce",emoji:"🐯",origem:"Indonésia",tamanho:"6-7 cm",temperatura:"20-26 °C",ph:"6.0-8.0",gh:"5-19 dGH",comportamento:"Ativo, belisca nadadeiras",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"5-7 anos",compatibilidade:"Ativos e rápidos",obs:"Evite com bettas e anjos."},
+{id:16,nome:"Colisa (Gourami Anão)",cientifico:"Trichogaster lalius",familia:"Osphronemidae",tipo:"doce",emoji:"🐠",origem:"Índia",tamanho:"5-7 cm",temperatura:"24-28 °C",ph:"6.0-7.5",gh:"4-10 dGH",comportamento:"Pacífico, tímido",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"3-4 anos",compatibilidade:"Pacíficos pequenos",obs:"Macho azul com listras vermelhas."},
+{id:17,nome:"Otocinclus",cientifico:"Otocinclus affinis",familia:"Loricariidae",tipo:"doce",emoji:"🐟",origem:"Amazônia",tamanho:"3-5 cm",temperatura:"21-26 °C",ph:"6.0-7.5",gh:"2-15 dGH",comportamento:"Pacífico, cardume",alimentacao:"SÓ algas verdes",dificuldade:"Médio",vida:"3-5 anos",compatibilidade:"Pacíficos pequenos",obs:"Melhor comedor de algas verdes."},
+{id:18,nome:"Rasbora Arlequim",cientifico:"Trigonostigma heteromorpha",familia:"Cyprinidae",tipo:"doce",emoji:"🐟",origem:"Tailândia",tamanho:"4-5 cm",temperatura:"22-27 °C",ph:"6.0-7.5",gh:"2-12 dGH",comportamento:"Pacífico, cardume",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"5-8 anos",compatibilidade:"Pacíficos pequenos",obs:"Laranja com triângulo preto."},
+{id:19,nome:"Tetra Serpae",cientifico:"Hyphessobrycon eques",familia:"Characidae",tipo:"doce",emoji:"🐠",origem:"Brasil (Mato Grosso)",tamanho:"4-5 cm",temperatura:"22-27 °C",ph:"5.5-7.5",gh:"5-15 dGH",comportamento:"Semi-agressivo",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"5-7 anos",compatibilidade:"Ativos e rápidos",obs:"Vermelho vibrante."},
+{id:20,nome:"Kinguio (Goldfish)",cientifico:"Carassius auratus",familia:"Cyprinidae",tipo:"doce",emoji:"🐠",origem:"China",tamanho:"15-30 cm",temperatura:"15-23 °C (fria!)",ph:"7.0-8.4",gh:"8-20 dGH",comportamento:"Pacífico, muito sujo",alimentacao:"Onívoro",dificuldade:"Fácil (aquário grande!)",vida:"10-20 anos",compatibilidade:"Só com kinguios",obs:"NÃO é de tigela! Água fria."},
+{id:21,nome:"Apistograma",cientifico:"Apistogramma cacatuoides",familia:"Cichlidae",tipo:"doce",emoji:"🐟",origem:"Amazônia",tamanho:"5-8 cm",temperatura:"23-29 °C",ph:"5.0-7.0",gh:"1-10 dGH",comportamento:"Pacífico, territorial",alimentacao:"Carnívoro",dificuldade:"Médio",vida:"3-5 anos",compatibilidade:"Tetras pequenos",obs:"Ciclídeo anão perfeito."},
+{id:22,nome:"Tetra Nariz Vermelho",cientifico:"Hemigrammus rhodostomus",familia:"Characidae",tipo:"doce",emoji:"🐟",origem:"Amazônia",tamanho:"4-5 cm",temperatura:"24-28 °C",ph:"5.5-7.0",gh:"2-8 dGH",comportamento:"Pacífico, cardume",alimentacao:"Onívoro",dificuldade:"Médio",vida:"5-8 anos",compatibilidade:"Pacíficos pequenos",obs:"Indicador de qualidade da água!"},
+{id:23,nome:"Bóia (Clown Loach)",cientifico:"Chromobotia macracanthus",familia:"Botiidae",tipo:"doce",emoji:"🤡",origem:"Indonésia",tamanho:"20-30 cm",temperatura:"25-30 °C",ph:"6.0-7.5",gh:"5-12 dGH",comportamento:"Pacífico, cardume",alimentacao:"Onívoro — come CARACÓIS!",dificuldade:"Médio",vida:"10-20 anos",compatibilidade:"Pacíficos similares",obs:"Come caracóis! Fica GRANDE."},
+{id:24,nome:"Tubarão Rabo Vermelho",cientifico:"Epalzeorhynchos bicolor",familia:"Cyprinidae",tipo:"doce",emoji:"🦈",origem:"Tailândia",tamanho:"12-15 cm",temperatura:"22-26 °C",ph:"6.5-7.5",gh:"5-15 dGH",comportamento:"Territorial (só 1)",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"5-8 anos",compatibilidade:"Ativos similares",obs:"Corpo preto, cauda vermelha."},
+{id:25,nome:"Peixe Arco-Íris",cientifico:"Melanotaenia praecox",familia:"Melanotaeniidae",tipo:"doce",emoji:"🌈",origem:"Nova Guiné",tamanho:"6-12 cm",temperatura:"22-28 °C",ph:"7.0-8.0",gh:"8-20 dGH",comportamento:"Pacífico, ativo, cardume",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"5-8 anos",compatibilidade:"Pacíficos ativos",obs:"Cores metálicas iridescentes."},
+{id:26,nome:"Kribensis",cientifico:"Pelvicachromis pulcher",familia:"Cichlidae",tipo:"doce",emoji:"🐠",origem:"África",tamanho:"8-10 cm",temperatura:"23-27 °C",ph:"6.0-8.0",gh:"5-20 dGH",comportamento:"Pacífico, forma casal",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"5-8 anos",compatibilidade:"Pacíficos similares",obs:"Ciclídeo africano anão."},
+{id:27,nome:"Tetra Embaixador",cientifico:"Inpaichthys kerri",familia:"Characidae",tipo:"doce",emoji:"🐟",origem:"Brasil (Aripuanã)",tamanho:"4-5 cm",temperatura:"24-28 °C",ph:"6.0-7.5",gh:"2-12 dGH",comportamento:"Pacífico, cardume",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"4-6 anos",compatibilidade:"Pacíficos pequenos",obs:"Azul iridescente."},
+{id:28,nome:"Tetra Saia Preta",cientifico:"Gymnocorymbus ternetzi",familia:"Characidae",tipo:"doce",emoji:"🐟",origem:"Brasil, Bolívia",tamanho:"5-7 cm",temperatura:"20-26 °C",ph:"6.0-8.0",gh:"5-20 dGH",comportamento:"Pacífico, cardume",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"3-5 anos",compatibilidade:"Ativos similares",obs:"Resistente — bom para iniciantes."},
+{id:101,nome:"Palhaço Ocellaris (Nemo)",cientifico:"Amphiprion ocellaris",familia:"Pomacentridae",tipo:"marinho",emoji:"🤡",origem:"Indo-Pacífico",tamanho:"8-11 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Pacífico, forma par (anêmona)",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"6-10 anos",compatibilidade:"Pacíficos marinhos",obs:"O mais famoso! Muda de sexo."},
+{id:102,nome:"Palhaço Marrom (Tomato)",cientifico:"Amphiprion frenatus",familia:"Pomacentridae",tipo:"marinho",emoji:"🍅",origem:"Indo-Pacífico",tamanho:"12-14 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Semi-agressivo",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"6-10 anos",compatibilidade:"Maiores e robustos",obs:"Vermelho-tomate. Mais agressivo."},
+{id:103,nome:"Tang Azul (Dory)",cientifico:"Paracanthurus hepatus",familia:"Acanthuridae",tipo:"marinho",emoji:"💙",origem:"Indo-Pacífico",tamanho:"25-30 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Pacífico, ativo",alimentacao:"Herbívoro — algas",dificuldade:"Médio",vida:"8-12 anos",compatibilidade:"Pacíficos grandes",obs:"A famosa Dory! 300L+."},
+{id:104,nome:"Tang Amarelo",cientifico:"Zebrasoma flavescens",familia:"Acanthuridae",tipo:"marinho",emoji:"💛",origem:"Havaí",tamanho:"15-20 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Pacífico (não com outro amarelo)",alimentacao:"Herbívoro — algas",dificuldade:"Fácil",vida:"10-20 anos",compatibilidade:"Pacíficos",obs:"Amarelo vibrante. Excelente comedor de algas."},
+{id:105,nome:"Anjo Imperador",cientifico:"Pomacanthus imperator",familia:"Pomacanthidae",tipo:"marinho",emoji:"👑",origem:"Indo-Pacífico",tamanho:"35-40 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Semi-agressivo",alimentacao:"Onívoro — esponjas",dificuldade:"Difícil",vida:"15-20 anos",compatibilidade:"Grandes",obs:"Jovem azul com anéis; adulto listrado. 500L+."},
+{id:106,nome:"Anjo Chama (Flame)",cientifico:"Centropyge loricula",familia:"Pomacanthidae",tipo:"marinho",emoji:"🔥",origem:"Pacífico (Havaí)",tamanho:"8-10 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Semi-agressivo",alimentacao:"Onívoro",dificuldade:"Médio",vida:"5-10 anos",compatibilidade:"Pacíficos a semi-agressivos",obs:"Vermelho-fogo com listras pretas."},
+{id:107,nome:"Anjo Beleza de Coral",cientifico:"Centropyge bispinosa",familia:"Pomacanthidae",tipo:"marinho",emoji:"💜",origem:"Indo-Pacífico",tamanho:"8-10 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Pacífico a semi-agressivo",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"5-10 anos",compatibilidade:"Pacíficos marinhos",obs:"Roxo/azul com bordas alaranjadas."},
+{id:108,nome:"Borboleta Bico de Cobre",cientifico:"Chelmon rostratus",familia:"Chaetodontidae",tipo:"marinho",emoji:"🦋",origem:"Indo-Pacífico",tamanho:"18-20 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Pacífico, tímido",alimentacao:"Carnívoro — come AIPTASIA!",dificuldade:"Difícil",vida:"5-10 anos",compatibilidade:"Pacíficos marinhos",obs:"Famoso por comer Aiptasia (pestes)."},
+{id:109,nome:"Mandarim (Dragonet)",cientifico:"Synchiropus splendidus",familia:"Callionymidae",tipo:"marinho",emoji:"🐉",origem:"Pacífico Ocidental",tamanho:"6-8 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Pacífico, tímido",alimentacao:"SÓ copépodos vivos!",dificuldade:"Difícil",vida:"3-6 anos",compatibilidade:"Pacíficos muito calmos",obs:"O peixe mais colorido do mundo. Não para iniciantes!"},
+{id:110,nome:"Gramata Real",cientifico:"Gramma loreto",familia:"Grammatidae",tipo:"marinho",emoji:"👑",origem:"Caribe",tamanho:"7-8 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Pacífico, territorial",alimentacao:"Carnívoro",dificuldade:"Fácil",vida:"5-10 anos",compatibilidade:"Pacíficos marinhos",obs:"Metade roxa, metade amarela. Fica de cabeça para baixo — normal!"},
+{id:111,nome:"Peixe Fogo (Firefish)",cientifico:"Nemateleotris magnifica",familia:"Gobiidae",tipo:"marinho",emoji:"🔥",origem:"Indo-Pacífico",tamanho:"7-9 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Muito pacífico, tímido",alimentacao:"Carnívoro",dificuldade:"Fácil",vida:"3-5 anos",compatibilidade:"Pacíficos muito calmos",obs:"PULA — tampa obrigatória!"},
+{id:112,nome:"Goby Guarda (Watchman)",cientifico:"Cryptocentrus cinctus",familia:"Gobiidae",tipo:"marinho",emoji:"🦐",origem:"Indo-Pacífico",tamanho:"8-10 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Pacífico (SIMBIOSE com camarão pistola!)",alimentacao:"Carnívoro",dificuldade:"Fácil",vida:"4-6 anos",compatibilidade:"Pacíficos marinhos",obs:"Vive com Camarão Pistola — ele cava a toca, o goby vigia."},
+{id:113,nome:"Wrasse Seis Linhas",cientifico:"Pseudocheilinus hexataenia",familia:"Labridae",tipo:"marinho",emoji:"⚡",origem:"Indo-Pacífico",tamanho:"7-9 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Ativo, pode ser mau com novos",alimentacao:"Carnívoro — come flatworms!",dificuldade:"Fácil",vida:"4-6 anos",compatibilidade:"Pacíficos a semi-agressivos",obs:"Seis listras laranja/azuis. Adicione por último."},
+{id:114,nome:"Hawkfish Chama",cientifico:"Neocirrhites armatus",familia:"Cirrhitidae",tipo:"marinho",emoji:"🦅",origem:"Pacífico (Fiji)",tamanho:"8-10 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Semi-agressivo, pousa em corais",alimentacao:"Carnívoro",dificuldade:"Fácil",vida:"5-10 anos",compatibilidade:"Semi-agressivos",obs:"Vermelho brilhante. Pode comer camarões pequenos."},
+{id:115,nome:"Leão Anão (Lionfish)",cientifico:"Dendrochirus brachypterus",familia:"Scorpaenidae",tipo:"marinho",emoji:"🦁",origem:"Indo-Pacífico",tamanho:"15-18 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Come o que cabe na boca",alimentacao:"Carnívoro",dificuldade:"Médio",vida:"8-12 anos",compatibilidade:"SÓ peixes GRANDES",obs:"Espinhos VENENOSOS! Cuidado!"},
+{id:116,nome:"Moreia Neve (Snowflake Eel)",cientifico:"Echidna nebulosa",familia:"Muraenidae",tipo:"marinho",emoji:"🐍",origem:"Indo-Pacífico",tamanho:"60-90 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Pacífico mas come pequenos",alimentacao:"Carnívoro",dificuldade:"Médio",vida:"10-15 anos",compatibilidade:"Grandes demais para comer",obs:"Branca com manchas. Escapa — TAMPA! 300L+."},
+{id:117,nome:"Cavalo-Marinho",cientifico:"Hippocampus erectus",familia:"Syngnathidae",tipo:"marinho",emoji:"🐴",origem:"Atlântico",tamanho:"12-18 cm",temperatura:"22-25 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Muito pacífico, monogâmico",alimentacao:"Artêmia viva (várias vezes/dia)",dificuldade:"Difícil",vida:"3-6 anos",compatibilidade:"SÓ cavalos-marinhos",obs:"Macho carrega os filhotes! Aquário específico."},
+{id:118,nome:"Donzela Azul",cientifico:"Chrysiptera cyanea",familia:"Pomacentridae",tipo:"marinho",emoji:"💙",origem:"Indo-Pacífico",tamanho:"6-8 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Agressivo (adulto)",alimentacao:"Onívoro",dificuldade:"Fácil",vida:"5-8 anos",compatibilidade:"Semi-agressivos robustos",obs:"Azul elétrico. Vira valentão — adicione por último!"},
+{id:119,nome:"Chromis Azul-Verde",cientifico:"Chromis viridis",familia:"Pomacentridae",tipo:"marinho",emoji:"🐟",origem:"Indo-Pacífico",tamanho:"8-10 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Muito pacífico, cardume",alimentacao:"Onívoro — plâncton",dificuldade:"Fácil",vida:"5-8 anos",compatibilidade:"Todos os pacíficos",obs:"A única donzela verdadeiramente pacífica. Cardume lindo."},
+{id:120,nome:"Anthias (Lyretail)",cientifico:"Pseudanthias squamipinnis",familia:"Serranidae",tipo:"marinho",emoji:"🧡",origem:"Indo-Pacífico",tamanho:"10-13 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Pacífico, cardume",alimentacao:"Carnívoro plâncton — 3-4x/dia",dificuldade:"Difícil",vida:"5-8 anos",compatibilidade:"Pacíficos calmos",obs:"Fêmeas laranja, macho rosa. Muda de sexo."},
+{id:121,nome:"Goby Neon (Limpador)",cientifico:"Elacatinus oceanops",familia:"Gobiidae",tipo:"marinho",emoji:"💡",origem:"Caribe",tamanho:"4-5 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Muito pacífico, limpador",alimentacao:"Carnívoro — parasitas",dificuldade:"Fácil",vida:"3-5 anos",compatibilidade:"Pacíficos marinhos",obs:"Azul elétrico. Come parasitas de outros peixes!"},
+{id:122,nome:"Tang Sailfin",cientifico:"Zebrasoma veliferum",familia:"Acanthuridae",tipo:"marinho",emoji:"⛵",origem:"Indo-Pacífico",tamanho:"30-40 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Pacífico",alimentacao:"Herbívoro — algas",dificuldade:"Médio",vida:"10-15 anos",compatibilidade:"Pacíficos grandes",obs:"Barbatana dorsal enorme. 500L+."},
+{id:123,nome:"Anjo Francês",cientifico:"Pomacanthus paru",familia:"Pomacanthidae",tipo:"marinho",emoji:"🇫🇷",origem:"Atlântico",tamanho:"35-40 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Semi-agressivo, forma par",alimentacao:"Onívoro — esponjas",dificuldade:"Médio",vida:"15-20 anos",compatibilidade:"Grandes",obs:"Preto com escamas amarelas. Casal monogâmico. 500L+."},
+{id:124,nome:"Borboleta Guaxinim",cientifico:"Chaetodon lunula",familia:"Chaetodontidae",tipo:"marinho",emoji:"🦝",origem:"Indo-Pacífico",tamanho:"18-20 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Pacífico",alimentacao:"Onívoro (cuidado com corais!)",dificuldade:"Médio",vida:"5-10 anos",compatibilidade:"Pacíficos marinhos",obs:"Máscara preta de guaxinim. Pode beliscar corais."},
+{id:125,nome:"Wrasse Leopardo",cientifico:"Macropharyngodon meleagris",familia:"Labridae",tipo:"marinho",emoji:"🐆",origem:"Indo-Pacífico",tamanho:"12-15 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Pacífico, enterra na areia",alimentacao:"Carnívoro",dificuldade:"Médio",vida:"5-8 anos",compatibilidade:"Pacíficos marinhos",obs:"Macho azul-esverdeado com manchas. Areia fina obrigatória!"},
+{id:126,nome:"Dottyback Orquídea",cientifico:"Pseudochromis fridmani",familia:"Pseudochromidae",tipo:"marinho",emoji:"🌸",origem:"Mar Vermelho",tamanho:"6-8 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Semi-agressivo",alimentacao:"Carnívoro",dificuldade:"Fácil",vida:"5-8 anos",compatibilidade:"Pacíficos a semi-agressivos",obs:"Roxo-orquídea brilhante. Adicione por último."},
+{id:127,nome:"Peixe-Jaquim (Harlequin Tusk)",cientifico:"Choerodon fasciatus",familia:"Labridae",tipo:"marinho",emoji:"🎭",origem:"Indo-Pacífico",tamanho:"25-30 cm",temperatura:"24-27 °C",ph:"8.1-8.4",salinidade:"1.020-1.025",comportamento:"Semi-agressivo, robusto",alimentacao:"Carnívoro — ouriços, moluscos",dificuldade:"Médio",vida:"8-12 anos",compatibilidade:"Grandes",obs:"Listras laranja/azuis + dentes azuis. Come ouriços. 300L+."}
+];
 
 // ===== NAVEGAÇÃO =====
 function mostrarTela(id){ document.querySelectorAll('.tela').forEach(t=>t.classList.remove('ativa')); document.getElementById(id).classList.add('ativa'); const m=document.getElementById('msg-recuperar'); if(m){m.className='mensagem';m.innerHTML='';} }
-function mostrarSubTela(id){ document.getElementById('menu-principal').style.display='none'; document.querySelectorAll('.sub-tela').forEach(t=>t.classList.remove('sub-ativa')); document.getElementById(id).classList.add('sub-ativa'); if(id==='sub-aquarios') renderizarListaAquarios(); if(id==='sub-banco') renderizarBancoPeixes(); if(id==='sub-peixes') renderizarMeusPeixes(); }
+function mostrarSubTela(id){ document.getElementById('menu-principal').style.display='none'; document.querySelectorAll('.sub-tela').forEach(t=>t.classList.remove('sub-ativa')); document.getElementById(id).classList.add('sub-ativa'); if(id==='sub-aquarios') renderizarListaAquarios(); if(id==='sub-banco') renderizarBancoPeixes(); if(id==='sub-peixes') renderizarMeusPeixes(); if(id==='sub-admin') renderizarPainelAdmin(); }
 function voltarMenu(){ document.getElementById('menu-principal').style.display='block'; document.querySelectorAll('.sub-tela').forEach(t=>t.classList.remove('sub-ativa')); }
 
 // ===== LOGIN / CADASTRO / RECUPERAR =====
@@ -350,16 +362,25 @@ function entrar(){
     const e=document.getElementById('email-login').value.trim(), s=document.getElementById('senha-login').value;
     if(!e||!s){ alert('⚠️ Preencha e-mail e senha!'); return; }
     const c=contas.find(x=>x.email===e&&x.senha===s);
-    if(c){ usuario.nome=c.nome; usuario.email=c.email; usuario.aquarios=c.aquarios||[]; usuario.aquarioAtivo=c.aquarioAtivo??(usuario.aquarios.length>0?0:null); document.getElementById('nome-usuario').innerText=`Olá, ${usuario.nome}! 👋`; renderizarSeletorAquarios(); atualizarDadosAquarioAtivo(); mostrarTela('tela-app'); }
-    else alert('❌ E-mail ou senha incorretos!');
+    if(c){
+        usuario.nome=c.nome; usuario.email=c.email; usuario.aquarios=c.aquarios||[]; usuario.aquarioAtivo=c.aquarioAtivo??(usuario.aquarios.length>0?0:null);
+        document.getElementById('nome-usuario').innerText=`Olá, ${usuario.nome}! 👋`;
+        // Mostra selo e botão admin se for admin
+        const isAdmin = c.admin === true;
+        document.getElementById('admin-badge').style.display = isAdmin ? 'inline-block' : 'none';
+        document.getElementById('card-admin').style.display = isAdmin ? 'block' : 'none';
+        renderizarSeletorAquarios(); atualizarDadosAquarioAtivo(); mostrarTela('tela-app');
+    } else alert('❌ E-mail ou senha incorretos!');
 }
 function cadastrar(){
     const n=document.getElementById('nome-cad').value.trim(), e=document.getElementById('email-cad').value.trim(), s=document.getElementById('senha-cad').value, cf=document.getElementById('confirma-cad').value;
     if(!n||!e||!s){ alert('⚠️ Preencha todos os campos!'); return; }
     if(s!==cf){ alert('⚠️ Senhas não coincidem!'); return; }
     if(contas.find(x=>x.email===e)){ alert('⚠️ E-mail já cadastrado!'); mostrarTela('tela-login'); return; }
-    contas.push({nome:n,email:e,senha:s,aquarios:[],aquarioAtivo:null});
+    contas.push({nome:n,email:e,senha:s,aquarios:[],aquarioAtivo:null,admin:false});
     usuario={nome:n,email:e,aquarios:[],aquarioAtivo:null};
+    document.getElementById('admin-badge').style.display='none';
+    document.getElementById('card-admin').style.display='none';
     alert(`🎉 Conta criada! Bem-vindo, ${n}! 🐠`);
     document.getElementById('nome-usuario').innerText=`Olá, ${n}! 👋`;
     renderizarSeletorAquarios(); mostrarTela('tela-app');
@@ -375,7 +396,37 @@ function sair(){
     if(!confirm('Sair?')) return;
     const i=contas.findIndex(x=>x.email===usuario.email); if(i!==-1){ contas[i].aquarios=[...usuario.aquarios]; contas[i].aquarioAtivo=usuario.aquarioAtivo; }
     document.getElementById('email-login').value=''; document.getElementById('senha-login').value='';
+    document.getElementById('admin-badge').style.display='none';
+    document.getElementById('card-admin').style.display='none';
     usuario={nome:'',email:'',aquarios:[],aquarioAtivo:null}; mostrarTela('tela-login');
+}
+
+// ===== PAINEL ADMIN =====
+function renderizarPainelAdmin(){
+    document.getElementById('admin-total-usuarios').textContent = contas.length;
+    let totalAq = 0;
+    contas.forEach(c => totalAq += (c.aquarios||[]).length);
+    document.getElementById('admin-total-aquarios').textContent = totalAq;
+    const lista = document.getElementById('admin-lista-usuarios');
+    lista.innerHTML = '';
+    contas.forEach((c,i) => {
+        const div = document.createElement('div');
+        div.className = 'lista-item';
+        div.innerHTML = `<h4>${c.admin?'👑 ':''}${c.nome} ${c.admin?'<span style="color:#f59e0b;">(ADMIN)</span>':''}</h4><p>${c.email} • ${(c.aquarios||[]).length} aquário(s) • ${(c.aquarios||[]).reduce((s,a)=>s+(a.peixes||[]).length,0)} peixes</p>${!c.admin?`<div class="acoes"><button class="btn btn-pequeno btn-perigo" onclick="banirUsuario(${i})">Banir usuário</button></div>`:''}`;
+        lista.appendChild(div);
+    });
+}
+function banirUsuario(i){
+    if(!confirm(`Banir o usuário "${contas[i].nome}"?`)) return;
+    contas.splice(i,1);
+    renderizarPainelAdmin();
+    alert('✅ Usuário banido!');
+}
+function limparTodosUsuarios(){
+    if(!confirm('Apagar TODOS os usuários (exceto admin)?')) return;
+    contas = contas.filter(c => c.admin === true);
+    renderizarPainelAdmin();
+    alert('✅ Todos os usuários foram removidos!');
 }
 
 // ===== AQUÁRIOS =====
@@ -415,7 +466,7 @@ function excluirAquario(i){
     renderizarListaAquarios(); renderizarSeletorAquarios();
 }
 
-// ===== ABA POPULARES =====
+// ===== BANCO POPULARES =====
 function setFiltro(f){ filtroAtual=f; document.querySelectorAll('.filtro-btn').forEach(b=>b.classList.toggle('ativo', b.dataset.filtro===f)); renderizarBancoPeixes(); }
 function renderizarBancoPeixes(){
     const b=document.getElementById('busca-peixe').value.toLowerCase();
@@ -430,7 +481,7 @@ function renderizarBancoPeixes(){
     });
 }
 
-// ===== ABA BUSCA MUNDIAL (WIKIPEDIA) =====
+// ===== BUSCA MUNDIAL (WIKIPEDIA) =====
 function mudarAba(a){
     abaAtual=a;
     document.getElementById('aba-populares').classList.toggle('ativo', a==='populares');
@@ -447,21 +498,19 @@ async function buscarWikipedia(){
         const url = `https://pt.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(termo+' peixe')}&gsrlimit=8&prop=pageimages|extracts&pithumbsize=300&exintro&explaintext&exlimit=max&format=json&origin=*`;
         const r = await fetch(url);
         const data = await r.json();
-        if(!data.query || !data.query.pages){ res.innerHTML = '<div class="sem-dados">Nenhum resultado encontrado 🔍<br>Tente outro nome.</div>'; return; }
+        if(!data.query || !data.query.pages){ res.innerHTML = '<div class="sem-dados">Nenhum resultado 🔍</div>'; return; }
         const paginas = Object.values(data.query.pages).sort((a,b)=>a.index-b.index);
         res.innerHTML = '';
         paginas.forEach(p=>{
             const div = document.createElement('div');
             div.className = 'wiki-result';
             div.onclick = ()=> abrirModalWiki(p);
-            const thumb = p.thumbnail && p.thumbnail.source 
-                ? `<img class="wiki-thumb" src="${p.thumbnail.source}" alt="${p.title}" loading="lazy">`
-                : `<div class="wiki-thumb-placeholder">🐟</div>`;
+            const thumb = p.thumbnail && p.thumbnail.source ? `<img class="wiki-thumb" src="${p.thumbnail.source}" alt="${p.title}" loading="lazy">` : `<div class="wiki-thumb-placeholder">🐟</div>`;
             div.innerHTML = `${thumb}<div class="wiki-info"><h4>${p.title}</h4><p>${(p.extract||'').slice(0,120)}...</p></div>`;
             res.appendChild(div);
         });
     } catch(err){
-        res.innerHTML = '<div class="sem-dados">⚠️ Erro na busca. Verifique sua conexão com a internet.</div>';
+        res.innerHTML = '<div class="sem-dados">⚠️ Erro na busca. Verifique sua internet.</div>';
     }
 }
 document.addEventListener('keydown', e=>{ if(e.key==='Enter' && document.activeElement.id==='busca-wiki') buscarWikipedia(); });
@@ -502,8 +551,8 @@ function abrirModalWiki(p){
         ${img}
         <h2>${p.title}</h2>
         <div class="cientifico">Ficha da Wikipedia 🌍</div>
-        <p class="descricao-wiki">${p.extract||'Sem descrição disponível.'}</p>
-        <a class="link-wiki" href="https://pt.wikipedia.org/wiki/${encodeURIComponent(p.title)}" target="_blank">📖 Ver artigo completo na Wikipedia</a>
+        <p class="descricao-wiki">${p.extract||'Sem descrição.'}</p>
+        <a class="link-wiki" href="https://pt.wikipedia.org/wiki/${encodeURIComponent(p.title)}" target="_blank">📖 Ver artigo completo</a>
         <div class="contador-qtd"><button onclick="mudarQtd(-1)">−</button><span id="qtd-valor">1</span><button onclick="mudarQtd(1)">+</button></div>
         <button class="btn btn-principal" onclick="adicionarAoAquario()">➕ Adicionar ao meu aquário</button>`;
     document.getElementById('modal-peixe').classList.add('aberto');
@@ -528,7 +577,7 @@ function renderizarMeusPeixes(){
     const c=document.getElementById('lista-meus-peixes');
     if(usuario.aquarioAtivo===null){ c.innerHTML='<div class="sem-dados">Selecione um aquário 🐠</div>'; return; }
     const a=usuario.aquarios[usuario.aquarioAtivo];
-    if(a.peixes.length===0){ c.innerHTML='<div class="sem-dados">Nenhum peixe ainda 🐟<br>Clique abaixo para adicionar!</div>'; return; }
+    if(a.peixes.length===0){ c.innerHTML='<div class="sem-dados">Nenhum peixe ainda 🐟</div>'; return; }
     c.innerHTML='';
     a.peixes.forEach((p,i)=>{
         const it=document.createElement('div'); it.className='lista-item';
