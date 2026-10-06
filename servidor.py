@@ -16,20 +16,52 @@ dados = {
     "tarefas": [],
     "gastos": [],
     "fotos": [],
-    "config": {"modo_escuro": False, "horas_luz": 8, "temperatura_ideal": [24, 28], "ph_ideal": [6.0, 7.5]}
+    "config": {
+        "modo_escuro": False,
+        "horas_luz": 8,
+        "temperatura_ideal": [24, 28],
+        "ph_ideal": [6.0, 7.5]
+    }
 }
 
 banco_peixes = [
-    {"id":1,"nome":"Tetra Neon","cientifico":"Paracheirodon innesi","tamanho":4,"ph":[5.5,7.0],"temperatura":[20,28],"dificuldade":"Fácil","tamanho_grupo":6},
-    {"id":2,"nome":"Coridora","cientifico":"Corydoras sp.","tamanho":6,"ph":[6.0,7.5],"temperatura":[22,28],"dificuldade":"Fácil","tamanho_grupo":4},
-    {"id":3,"nome":"Betta","cientifico":"Betta splendens","tamanho":6,"ph":[6.0,7.5],"temperatura":[24,30],"dificuldade":"Média","tamanho_grupo":1}
+    {
+        "id": 1,
+        "nome": "Tetra Neon",
+        "cientifico": "Paracheirodon innesi",
+        "tamanho": 4,
+        "ph": [5.5, 7.0],
+        "temperatura": [20, 28],
+        "dificuldade": "Fácil",
+        "tamanho_grupo": 6
+    },
+    {
+        "id": 2,
+        "nome": "Coridora",
+        "cientifico": "Corydoras sp.",
+        "tamanho": 6,
+        "ph": [6.0, 7.5],
+        "temperatura": [22, 28],
+        "dificuldade": "Fácil",
+        "tamanho_grupo": 4
+    },
+    {
+        "id": 3,
+        "nome": "Betta",
+        "cientifico": "Betta splendens",
+        "tamanho": 6,
+        "ph": [6.0, 7.5],
+        "temperatura": [24, 30],
+        "dificuldade": "Média",
+        "tamanho_grupo": 1
+    }
 ]
 
 @app.route('/')
 def index():
     return send_from_directory('.', 'index.html')
 
-@app.route('/api/dados', methods=['GET','POST'])
+@app.route('/api/dados', methods=['GET', 'POST'])
 def api_dados():
     global dados
     if request.method == 'POST':
